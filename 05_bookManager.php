@@ -6,6 +6,11 @@
 
         private array $books = []; // 登録済みの全図書リスト
 
+        public function getBooks() { // ローカルストレージ保存機能の実装のために追加
+
+            return $this->books;
+        }
+
         public function register(Book $book) { // 図書登録機能
 
             $this->books[] = $book; 
@@ -23,7 +28,7 @@
         }
 
         public function isNumRegistered(string $bookNum) {
-        // 상태 유효성, 도서 번호 중복 검사 로직
+        // 状態チェック（図書番号の重複検証）ロジック
 
             foreach($this->books as $book) {
 

@@ -2,7 +2,7 @@
 
     // 06_inputValidator.php
 
-    class InputValidator {
+    class InputValidator { // 설계 예정
 
     }
 

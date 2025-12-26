@@ -5,35 +5,42 @@
     require_once('./02_member.php');
     require_once('./04_lendManager.php');
     require_once('./05_bookManager.php');
+    require_once('./06_inputValidator.php');
+    require_once('07_jsonStore.php');
 
     $lendManager = new LendManager();
     $bookManager = new BookManager();
+    $baseDir = __DIR__;
+    $dataPath = $baseDir . DIRECTORY_SEPARATOR . "data.json";
+    $jsonStore = new JsonStore($dataPath);
 
     while(true) {
 
-        $method = readline( // メニュー表示およびユーザー入力取得
-
+        // メニュー表示およびユーザー入力取得
+        $method = readline(
             "\n Select a number: \n".
             "1. Lend a book.\n".
             "2. Return a book.\n".
             "3. Register a book.\n".
             "4. View all books.\n".
             "5. View all loans.\n".
-            "6. terminate.\n"
+            "6. Save the data.\n".
+            "7. Load the data.\n".
+            "0. terminate.\n"
         );
-        if($method == "6") { break; }
+        if($method == "0") { break; }
 
         switch($method) {
 
             case "1" : // 図書貸出機能の呼び出し
 
-                $bookNum = readline("Enter the number of a book.\n");
+                $bookNum = readline("\n Enter the number of a book.\n");
                 // 貸出対象の図書番号を入力
 
                 if($lendManager->isBookLent($bookNum)) {
-                // 중복 대여 검사 로직 실행
+                // 重複貸出の検証を実行
                     
-                    echo "This book is already on loan.";
+                    echo "\n This book is already on loan.";
                     break;
                 }
 
@@ -45,10 +52,14 @@
 
                 if($foundBook === null) { // 検索失敗時
 
-                    echo "No results. \n";
+                    echo "\n No results. \n";
                     break;
                     
-                } else $book = $foundBook; // 検索成功時、Book オブジェクトを代入
+                } else {
+                    
+                    $book = $foundBook;
+                    echo "\n The loan has been completed. \n";
+                }// 検索成功時、Book オブジェクトを代入
  
                 $member = new Member($memberName);
                 // 入力された名前で Member オブジェクトを生成
@@ -59,7 +70,7 @@
 
             case "2" : // 図書返却機能の呼び出し
 
-                $bookNum = readline("Enter the number of a book. \n");
+                $bookNum = readline("\n Enter the number of a book. \n");
                 // 返却対象の図書番号を入力
 
                 $foundLoan = $lendManager->findLoanByBookNum($bookNum);
@@ -67,7 +78,7 @@
 
                 if($foundLoan === null) { // 検索失敗時
                  
-                    echo "No results. \n";
+                    echo "\n No results. \n";
                     break;
 
                 } else {
@@ -78,27 +89,25 @@
                     // 検索成功時、該当の貸出記録に紐づく Book オブジェクトを利用して、
                     // 全体の貸出記録を走査し、
                     // この Book オブジェクトを保持している単一の貸出記録を全体の記録から削除する。
-                        echo "Return completed. \n";
+                        echo "\n Return completed. \n";
 
-                    }else echo "No results. \n"; // 返却可能な図書が見つからなかった場合
+                    }else echo "\n No results. \n"; // 返却可能な図書が見つからなかった場合
 
                     break;
                 }
 
             case "3" : // 図書登録機能の呼び出し
 
-                $bookNum = readline("Enter the number of a book. \n");
+                $bookNum = readline("\n Enter the number of a book. \n");
                 // 登録する図書番号を入力
-
                 if($bookManager->isNumRegistered($bookNum)) {
-                // 도서 번호 중복 검사 실행
-                             
-                    echo "This book is already registered.";
+                // 図書番号の重複検証を実行
+
+                    echo "\n This book is already registered. \n";
                     break;
                 }
 
-
-                $bookName = readline("Enter the name of a book. \n");
+                $bookName = readline("\n Enter the name of a book. \n");
                 // 登録する図書名を入力
 
                 $book = new Book($bookNum, $bookName);
@@ -106,7 +115,7 @@
 
                 $bookManager->register($book);
                 // 生成したオブジェクトを図書リストに登録
-                echo "Registration successful. \n";
+                echo "\n Registration successful. \n";
                 break;
 
             case "4" : // 登録済み図書一覧表示
@@ -117,7 +126,25 @@
                 $lendManager->view();
                 break;
 
-            default : echo "Invalid method selected. \n";
+            case "6" : // データ保存機能の呼び出し
+                $jsonStore->save($bookManager, $lendManager);
+                echo "\n Data saved. \n";
+                break;
+
+            case "7" : // データ読込機能の呼び出し
+                $data = $jsonStore->load($dataPath);
+                if($data === null) {
+
+                    echo "\n No data to load. \n";
+
+                }else { // load methodの戻り値を mapping methodに渡す
+
+                    $jsonStore->mapping($data, $bookManager, $lendManager);
+                    echo "\n Data Loaded. \n";
+                }
+                break;
+
+            default : echo "\n Invalid method selected. \n";
         }
     }
 ?>

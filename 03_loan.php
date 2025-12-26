@@ -15,7 +15,7 @@
             $this->member = $member;
         }
         
-        public function getMember() { // 데이터 로컬 저장 위해 추가.
+        public function getMember() { // ローカルストレージ保存機能の実装のために追加
 
             return $this->member;
         }

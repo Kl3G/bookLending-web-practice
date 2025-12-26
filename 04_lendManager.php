@@ -8,7 +8,7 @@
 
         private array $loans = []; // 全体の図書貸出記録
 
-        public function getLoans() { // 데이터 로컬 저장 위해 추가.
+        public function getLoans() { // ローカルストレージ保存機能の実装のために追加
 
             return $this->loans;
         }
@@ -69,7 +69,7 @@
         } */
 
         public function isBookLent(string $bookNum) {
-        // 상태 유효성, 중복 대여 검사 로직 정의
+        // 状態チェック（重複貸出の検証）ロジック
 
             foreach($this->loans as $loan) {
 
