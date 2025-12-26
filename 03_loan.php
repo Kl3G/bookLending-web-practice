@@ -14,6 +14,11 @@
             $this->book = $book;
             $this->member = $member;
         }
+        
+        public function getMember() { // 데이터 로컬 저장 위해 추가.
+
+            return $this->member;
+        }
 
         public function getBook() { // Book オブジェクトの getter
 

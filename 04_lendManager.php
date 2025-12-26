@@ -8,6 +8,10 @@
 
         private array $loans = []; // 全体の図書貸出記録
 
+        public function getLoans() { // 데이터 로컬 저장 위해 추가.
+
+            return $this->loans;
+        }
 
         public function lendTo(Book $book, Member $member) { // 図書貸出機能
 
@@ -63,6 +67,21 @@
             }
             return null;
         } */
+
+        public function isBookLent(string $bookNum) {
+        // 상태 유효성, 중복 대여 검사 로직 정의
+
+            foreach($this->loans as $loan) {
+
+                $gotBookNum = $loan->getBook()->getNum();
+
+                if($bookNum === $gotBookNum) {
+
+                   return true; 
+                }
+            }
+            return false;
+        }
 
         public function view() { // 全貸出記録の表示機能
 

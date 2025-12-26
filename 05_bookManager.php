@@ -22,6 +22,19 @@
             return null; // 見つからなかった場合は null を返却
         }
 
+        public function isNumRegistered(string $bookNum) {
+        // 상태 유효성, 도서 번호 중복 검사 로직
+
+            foreach($this->books as $book) {
+
+                if($book->getNum() === $bookNum) {
+
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public function view() { // 登録済み図書一覧表示機能
 
             print_r($this->books);

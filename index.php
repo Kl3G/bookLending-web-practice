@@ -30,6 +30,13 @@
                 $bookNum = readline("Enter the number of a book.\n");
                 // 貸出対象の図書番号を入力
 
+                if($lendManager->isBookLent($bookNum)) {
+                // 중복 대여 검사 로직 실행
+                    
+                    echo "This book is already on loan.";
+                    break;
+                }
+
                 $memberName = readline("Enter your name.\n");
                 // 利用者名を入力
 
@@ -74,7 +81,7 @@
                         echo "Return completed. \n";
 
                     }else echo "No results. \n"; // 返却可能な図書が見つからなかった場合
-                    
+
                     break;
                 }
 
@@ -82,6 +89,14 @@
 
                 $bookNum = readline("Enter the number of a book. \n");
                 // 登録する図書番号を入力
+
+                if($bookManager->isNumRegistered($bookNum)) {
+                // 도서 번호 중복 검사 실행
+                             
+                    echo "This book is already registered.";
+                    break;
+                }
+
 
                 $bookName = readline("Enter the name of a book. \n");
                 // 登録する図書名を入力

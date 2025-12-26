@@ -11,7 +11,7 @@
             $this->name = $name;
         }
 
-        public function getter() { // 利用者名の getter
+        public function getName() { // 利用者名の getter
 
             return $this->name;
         }
