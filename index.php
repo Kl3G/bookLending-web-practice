@@ -65,11 +65,16 @@
 
                 } else {
                     
-                    $lendManager->returnFrom($foundLoan->getBook());
+                    $gotBook = $foundLoan->getBook();
+                    
+                    if($lendManager->returnFrom($gotBook)){
                     // 検索成功時、該当の貸出記録に紐づく Book オブジェクトを利用して、
                     // 全体の貸出記録を走査し、
                     // この Book オブジェクトを保持している単一の貸出記録を全体の記録から削除する。
-                    echo "Return completed. \n";
+                        echo "Return completed. \n";
+
+                    }else echo "No results. \n"; // 返却可能な図書が見つからなかった場合
+                    
                     break;
                 }
 

@@ -28,14 +28,14 @@
 
                     unset($this->loans[$index]); // 一致した貸出記録を配列から削除
                     $this->loans = array_values($this->loans); // 削除後の配列インデックスを整理
-                    return; // foreach 外の echo が常に実行されるのを防ぐ 
+                    return true; // foreach 外の echo が常に実行されるのを防ぐ 
                 }
             }
-            echo "No results. \n"; // 返却可能な図書が見つからなかった場合
+            return false;
         }
 
 
-        public function findLoanByBookNum($bookNum) {
+        public function findLoanByBookNum(string $bookNum) {
         // 特定の図書に対する単一の貸出記録を検索する機能
 
             foreach($this->loans as $loan) { // 全体の貸出記録を走査
