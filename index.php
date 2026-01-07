@@ -13,6 +13,8 @@
     $baseDir = __DIR__;
     $dataPath = $baseDir . DIRECTORY_SEPARATOR . "data.json";
     $jsonStore = new JsonStore($dataPath);
+    date_default_timezone_set('Asia/Tokyo'); // 日本時間に設定
+    $loanDate = date('Y-m-d'); // 日付形式を設定
 
     while(true) {
 
@@ -65,7 +67,7 @@
                 $member = new Member($memberName);
                 // 入力された名前で Member オブジェクトを生成
 
-                $lendManager->lendTo($book, $member); 
+                $lendManager->lendTo($book, $member, $loanDate); 
                 // Book, Member オブジェクトを使って単一の貸出記録を作成
                 break;
 

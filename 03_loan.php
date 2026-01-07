@@ -8,11 +8,13 @@
 
         private Book $book; // Book オブジェクト
         private Member $member; // Member オブジェクト
+        private string $date; // 貸出発生日
 
-        public function __construct(Book $book, Member $member) {
+        public function __construct(Book $book, Member $member, string $date) {
 
             $this->book = $book;
             $this->member = $member;
+            $this->date = $date;
         }
         
         public function getMember() { // ローカルストレージ保存機能の実装のために追加
@@ -23,6 +25,11 @@
         public function getBook() { // Book オブジェクトの getter
 
             return $this->book;
+        }
+
+        public function getDate() { // 貸出発生日 getter
+
+            return $this->date;
         }
     }
     

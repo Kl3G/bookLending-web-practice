@@ -13,14 +13,13 @@
             return $this->loans;
         }
 
-        public function lendTo(Book $book, Member $member) { // 図書貸出機能
+        public function lendTo(Book $book, Member $member, string $date) { // 図書貸出機能
 
-            $loan = new Loan($book, $member);
+            $loan = new Loan($book, $member, $date);
             // 引数として受け取った Book, Member オブジェクトで
             // 単一の図書貸出記録を生成
             $this->loans[] = $loan; // 単一の貸出記録を配列に保存
         }
-
 
         public function returnFrom(Book $book) { // 図書返却機能
 
@@ -37,7 +36,6 @@
             }
             return false;
         }
-
 
         public function findLoanByBookNum(string $bookNum) {
         // 特定の図書に対する単一の貸出記録を検索する機能
