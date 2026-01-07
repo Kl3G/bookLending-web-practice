@@ -150,19 +150,12 @@
             case "8" :
                 $bookNum = readline("\n Enter the number of a book. \n"); // 削除する書籍番号を入力
                 
-                $loans = $lendManager->getLoans(); // 貸出履歴を取得
-                $onLoan = false; // 貸出中かどうかを判定するflag
-                foreach($loans as $loan) {
-
-                    if($bookNum === $loan->getBook()->getNum()) { // 削除対象の書籍が貸出中か確認
-
-                        echo "\n This book is on loan. \n";
-                        $onLoan = true; // 貸出中flagを立てる
-                        break;
-                    }
+                if($lendManager->isBookLent($bookNum)) {
+                // 書籍が貸出中の場合は switch 文を終了
+                
+                    echo "\n This book is on loan. \n";
+                    break;
                 }
-
-                if($onLoan) break; // 書籍が貸出中の場合は switch 文を終了
 
                 if($bookManager->deleteBook($bookNum) === false) { // 削除対象の書籍が存在しない場合
 
