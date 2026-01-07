@@ -26,6 +26,7 @@
             "5. View all loans.\n".
             "6. Save the data.\n".
             "7. Load the data.\n".
+            "8. Delete a book.\n".
             "0. terminate.\n"
         );
         if($method == "0") { break; }
@@ -132,15 +133,42 @@
                 break;
 
             case "7" : // データ読込機能の呼び出し
-                $data = $jsonStore->load($dataPath);
-                if($data === null) {
+                $parsedData = $jsonStore->load();
+                if($parsedData === null) {
 
                     echo "\n No data to load. \n";
 
                 }else { // load methodの戻り値を mapping methodに渡す
 
-                    $jsonStore->mapping($data, $bookManager, $lendManager);
+                    $jsonStore->mapping($parsedData, $bookManager, $lendManager);
                     echo "\n Data Loaded. \n";
+                }
+                break;
+
+            case "8" :
+                $bookNum = readline("\n Enter the number of a book. \n"); // 削除する書籍番号を入力
+                
+                $loans = $lendManager->getLoans(); // 貸出履歴を取得
+                $onLoan = false; // 貸出中かどうかを判定するflag
+                foreach($loans as $loan) {
+
+                    if($bookNum === $loan->getBook()->getNum()) { // 削除対象の書籍が貸出中か確認
+
+                        echo "\n This book is on loan. \n";
+                        $onLoan = true; // 貸出中flagを立てる
+                        break;
+                    }
+                }
+
+                if($onLoan) break; // 書籍が貸出中の場合は switch 文を終了
+
+                if($bookManager->deleteBook($bookNum) === false) { // 削除対象の書籍が存在しない場合
+
+                    echo "\n No book to delete. \n";
+
+                } else { // 書籍が存在し、削除に成功した場合
+
+                    echo "\n The book with number $bookNum has been deleted. \n";
                 }
                 break;
 

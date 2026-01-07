@@ -40,6 +40,21 @@
             return false;
         }
 
+        public function deleteBook(string $bookNum): bool { // 削除メソッド（削除対象の書籍番号を受け取る）
+            
+            foreach($this->books as $index => $book) { // 書籍一覧を走査
+
+                if($bookNum === $book->getNum()) { // 入力された番号と書籍番号が一致した場合
+
+                    unset($this->books[$index]); // 削除処理を実行
+                    $this->books = array_values($this->books); // 削除後、配列の index を詰め直す
+
+                    return true; // 削除成功を返す
+                }
+            }
+            return false; // 削除対象が存在しないことを返す
+        }
+
         public function view() { // 登録済み図書一覧表示機能
 
             print_r($this->books);

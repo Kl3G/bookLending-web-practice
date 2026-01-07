@@ -7,7 +7,7 @@
     class JsonStore { // 責務：データの保存・読込
 
         // 図書一覧と貸出記録をまとめて JSON 形式で保存
-        // PHP(サーバーサイド)では localStorage API は使用できない
+        // Implement local JSON file–based storage and add save/load functionality.
 
         private string $path;
 
@@ -36,6 +36,8 @@
             // Manager から貸出一覧を取得し、連想配列として保存
 
                 $loansArr[] = [
+                // If the data to be stored is an object,
+                // store only the information needed to retrieve it later.
 
                     "bookNum"   => $loan->getBook()->getNum(),
                     "memberName"=> $loan->getMember()->getName()
@@ -55,29 +57,29 @@
             // Parameters = 1.path  2.data  3.flags
         }
 
-        public function load(string $dataPath) {
+        public function load() {
 
-            if (!file_exists($dataPath)) return null; // ファイル存在チェック
+            if (!file_exists($this->path)) return null; // ファイル存在チェック
 
-            $json = file_get_contents($dataPath); // ファイル読込 = getItem
+            $json = file_get_contents($this->path); // ファイル読込 = getItem
             if ($json === false) return null; // 読込失敗チェック
             
-            $data = json_decode($json, true); // == JSON.parse()
-            // json_decode parameter = 1.JSON data 2.객체를 연관배열로 변환할지 여부
-            if (!is_array($data)) return null; // データ形式チェック
+            $parsedData = json_decode($json, true); // == JSON.parse()
+            // json_decode parameter = 1.JSON data 2.객체 연관배열 변환 기능
+            if (!is_array($parsedData)) return null; // データ形式チェック
 
-            return $data; // mapping methodへ渡す
+            return $parsedData; // mapping methodへ渡す
         }
 
         public function mapping( // load に含めると責務が曖昧になるため分離
-            array $data, BookManager $bookManager, LendManager $lendManager) {
+            array $parsedData, BookManager $bookManager, LendManager $lendManager) {
 
-            foreach($data['books'] as $book) { 
+            foreach($parsedData['books'] as $book) { 
                 // データから図書を復元
                 $bookManager->register(new Book($book['num'], $book['name']));
             }
 
-            foreach($data['loans'] as $loan) { // 
+            foreach($parsedData['loans'] as $loan) { // 
 
                 $book = $bookManager->findBook($loan['bookNum']);
                 // 二重ループを避け、findBook メソッドを再利用
