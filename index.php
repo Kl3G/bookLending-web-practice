@@ -10,7 +10,8 @@
 
     $lendManager = new LendManager();
     $bookManager = new BookManager();
-    $inputValidator = new InputValidator();
+    $loanInputValidator = new LoanInputValidator(); // 生成責任は Factory に分離可能
+    $bookInputValidator = new BookInputValidator(); // 生成責任は Factory に分離可能
     $baseDir = __DIR__;
     $dataPath = $baseDir . DIRECTORY_SEPARATOR . "data.json";
     $jsonStore = new JsonStore($dataPath);
@@ -54,7 +55,8 @@
                 $foundBook = $bookManager->findBook($bookNum);
                 // 入力された番号に対応する Book オブジェクトを取得
 
-                if(!$inputValidator->validateLoanInput($bookNum, $memberName)) {
+                if(!$loanInputValidator->validate($bookNum, $memberName)) {
+                    // validate という interface の method にのみ依存
 
                     echo "\nInvalid input. Enter a 3-digit book number and a member name (English or Japanese letters only).\n";
                     break;
@@ -120,7 +122,8 @@
                 $bookName = readline("\n Enter the name of a book. \n");
                 // 登録する図書名を入力
 
-                if(!$inputValidator->validateBookInput($bookNum, $bookName)) {
+                if(!$bookInputValidator->validate($bookNum, $bookName)) {
+                    // validate という interface の method にのみ依存
 
                     echo "\nInvalid input. Enter a 3-digit book number and a book name (English or Japanese letters only).\n";
                     break;
