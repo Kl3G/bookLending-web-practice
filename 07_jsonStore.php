@@ -16,38 +16,12 @@
             $this->path = $path;
         }
 
-        public function save(BookManager $bookManager, LendManager $lendManager) {
-
-            $booksArr = []; // 登録済み図書を格納する配列
-
-            foreach ($bookManager->getBooks() as $book) {
-            // Manager から図書一覧を取得し、連想配列として保存
-
-                $booksArr[] = [
-
-                    "num" => $book->getNum(),
-                    "name"=> $book->getName()
-                ];
-            }
-
-            $loansArr = []; // 貸出記録を格納する配列
-
-            foreach ($lendManager->getLoans() as $loan) {
-            // Manager から貸出一覧を取得し、連想配列として保存
-
-                $loansArr[] = [
-                // If the data to be stored is an object,
-                // store only the information needed to retrieve it later.
-
-                    "bookNum"   => $loan->getBook()->getNum(),
-                    "memberName"=> $loan->getMember()->getName()
-                ];
-            }
+        public function save(array $books, array $loans) {
 
             $payload = [
-            // JSON として保存する最終データ構造
-                "books"=> $booksArr,
-                "loans"=> $loansArr,
+
+                "books" => $books,
+                "loans" => $loans
             ];
 
             $json = json_encode($payload, // == JSON.stringify()
@@ -90,29 +64,10 @@
             }
         }
 
-        /* findBook methodを再利用しない場合の実装例
-        public function mapping(array $data,
-            BookManager $bookManager, LendManager $lendManager) { 
-            
-            foreach($data['books'] as $book) { 
-            
-                $bookManager->register(new Book($book['num'], $book['name'])); 
-            } 
-                
-            $books = $bookManager->getBooks(); 
-            
-            foreach($data['loans'] as $loan) { 
+        function saveData() {
 
-                foreach($books as $book) { 
-
-                    if($book->getNum() === $loan['bookNum']) { 
-
-                        $lendManager->lendTo($book, new Member($loan['memberName'])); 
-                    } 
-                } 
-            } 
+            
         }
-        */
     }
 
 ?>

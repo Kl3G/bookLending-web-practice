@@ -55,9 +55,26 @@
             return false; // 削除対象が存在しないことを返す
         }
 
+        public function toJsonArray() { // Data保存のため、ObjectをJSON形式に変換
+
+            $booksArr = []; // 登録済み図書を格納する配列
+
+            foreach ($this->getBooks() as $book) {
+            // Manager から図書一覧を取得し、連想配列として保存
+
+                $booksArr[] = [
+
+                    "num" => $book->getNum(),
+                    "name"=> $book->getName()
+                ];
+            }
+
+            return $booksArr;
+        }
+
         public function view() { // 登録済み図書一覧表示機能
 
-            print_r($this->books);
+            return $this->books;
         }
     }
 

@@ -81,10 +81,32 @@
             return false;
         }
 
+        public function toJsonArray() { // Data保存のため、ObjectをJSON形式に変換
+
+            $loansArr = []; // 貸出記録を格納する配列
+
+            foreach ($this->getLoans() as $loan) {
+            // Manager から貸出一覧を取得し、連想配列として保存
+
+                $loansArr[] = [
+                // If the data to be stored is an object,
+                // store only the information needed to retrieve it later.
+
+                    "bookNum"   => $loan->getBook()->getNum(),
+                    "memberName"=> $loan->getMember()->getName(),
+                    "issueDate"=> $loan->getDate()
+                ];
+            }
+
+            return $loansArr;
+        }
+
         public function view() { // 全貸出記録の表示機能
 
-            print_r($this->loans);
+            return $this->loans;
         }
+
+        
     }
 
 ?>

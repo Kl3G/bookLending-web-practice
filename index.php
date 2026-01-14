@@ -10,8 +10,8 @@
 
     $lendManager = new LendManager();
     $bookManager = new BookManager();
-    $loanInputValidator = new LoanInputValidator(); // 生成責任は Factory に分離可能
-    $bookInputValidator = new BookInputValidator(); // 生成責任は Factory に分離可能
+    $loanInputValidator = new LoanInputValidator();
+    $bookInputValidator = new BookInputValidator();
     $baseDir = __DIR__;
     $dataPath = $baseDir . DIRECTORY_SEPARATOR . "data.json";
     $jsonStore = new JsonStore($dataPath);
@@ -138,15 +138,15 @@
                 break;
 
             case "4" : // 登録済み図書一覧表示
-                $bookManager->view();
+                print_r($bookManager->view());
                 break;
 
             case "5" : // 貸出記録一覧表示
-                $lendManager->view();
+                print_r($lendManager->view());
                 break;
 
             case "6" : // データ保存機能の呼び出し
-                $jsonStore->save($bookManager, $lendManager);
+                $jsonStore->save($bookManager->toJsonArray(), $lendManager->toJsonArray());
                 echo "\n Data saved. \n";
                 break;
 
