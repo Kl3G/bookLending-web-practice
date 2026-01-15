@@ -14,7 +14,7 @@
     $bookInputValidator = new BookInputValidator();
     $baseDir = __DIR__;
     $dataPath = $baseDir . DIRECTORY_SEPARATOR . "data.json";
-    $jsonStore = new JsonStore($dataPath);
+    $store = new SQLStore($dataPath);
     date_default_timezone_set('Asia/Tokyo'); // 日本時間に設定
     $loanDate = date('Y-m-d'); // 日付形式を設定
 
@@ -146,19 +146,19 @@
                 break;
 
             case "6" : // データ保存機能の呼び出し
-                $jsonStore->save($bookManager->toJsonArray(), $lendManager->toJsonArray());
+                $store->save($bookManager->toJsonArray(), $lendManager->toJsonArray());
                 echo "\n Data saved. \n";
                 break;
 
             case "7" : // データ読込機能の呼び出し
-                $parsedData = $jsonStore->load();
+                $parsedData = $store->load();
                 if($parsedData === null) {
 
                     echo "\n No data to load. \n";
 
                 }else { // load methodの戻り値を mapping methodに渡す
 
-                    $jsonStore->mapping($parsedData, $bookManager, $lendManager);
+                    $store->mapping($parsedData, $bookManager, $lendManager);
                     echo "\n Data Loaded. \n";
                 }
                 break;

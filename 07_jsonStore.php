@@ -3,20 +3,41 @@
     // 07_jsonStore.php
     require_once('./01_book.php');
     require_once('./02_member.php');
+
+    interface DataStore { // interface 로 추상 의존을 준비
+
+        public function save(array $books, array $loans);
+    }
+    // interface 사용 이유
+    // 1. 두 Store 를 교체하며 사용할 이유가 필요하며 명확하다.
+    // 2. SQLStore 와 JSONStore 둘 다 $books 와 $loans 를 받아 그것을 저장한다.
+    // 즉, 책임과 그 책임이 향하는 대상(입력의 의미)이 같고, 그것을 구현하는 방식만 다르다.
+
+    class SQLStore implements DataStore { // Details(SQLStore, JSONStore)이 추상에 의존
+
+        public function __construct(private string $path) {}
+
+        public function save(array $books, array $loans): bool {
+
+            $payload = [
+
+                "books" => $books,
+                "loans" => $loans
+            ];
+
+            // Store 교체 test のため、echo を임시 사용
+            echo "SQLStore\n".json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        }
+    }
     
-    class JsonStore { // 責務：データの保存・読込
+    class JSONStore implements DataStore { // 責務：データの保存・読込
 
         // 図書一覧と貸出記録をまとめて JSON 形式で保存
         // Implement local JSON file–based storage and add save/load functionality.
 
-        private string $path;
+        public function __construct(private string $path) {}
 
-        public function __construct(string $path) {
-
-            $this->path = $path;
-        }
-
-        public function save(array $books, array $loans) {
+        public function save(array $books, array $loans): bool {
 
             $payload = [
 
@@ -27,8 +48,10 @@
             $json = json_encode($payload, // == JSON.stringify()
                 JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
             // Parameters = 1.value  2.flags 
-            file_put_contents($this->path, $json, LOCK_EX); // setItem
+            if(file_put_contents($this->path, $json, LOCK_EX)) { return true; } // setItem
             // Parameters = 1.path  2.data  3.flags
+
+            return false; // 반환 타입 명시하고, 성공/실패 return
         }
 
         public function load() {
