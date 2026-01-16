@@ -6,7 +6,7 @@
 
     interface DataStore { // interface 로 추상 의존을 준비
 
-        public function save(array $books, array $loans);
+        public function save(array $books, array $loans): bool;
     }
     // interface 사용 이유
     // 1. 두 Store 를 교체하며 사용할 이유가 필요하며 명확하다.
@@ -25,8 +25,9 @@
                 "loans" => $loans
             ];
 
-            // Store 교체 test のため、echo を임시 사용
-            echo "SQLStore\n".json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+            if(json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) === false ) return false;
+            
+            return true;
         }
     }
     
@@ -48,10 +49,10 @@
             $json = json_encode($payload, // == JSON.stringify()
                 JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
             // Parameters = 1.value  2.flags 
-            if(file_put_contents($this->path, $json, LOCK_EX)) { return true; } // setItem
+            if(file_put_contents($this->path, $json, LOCK_EX) === false) return false; // setItem
             // Parameters = 1.path  2.data  3.flags
 
-            return false; // 반환 타입 명시하고, 성공/실패 return
+            return true;
         }
 
         public function load() {

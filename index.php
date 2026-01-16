@@ -7,7 +7,9 @@
     require_once('./05_bookManager.php');
     require_once('./06_inputValidator.php');
     require_once('07_jsonStore.php');
+    require_once('SaveDataUseCase.php');
 
+    $saveDataUseCase = new SaveDataUseCase();
     $lendManager = new LendManager();
     $bookManager = new BookManager();
     $loanInputValidator = new LoanInputValidator();
@@ -33,7 +35,7 @@
             "8. Delete a book.\n".
             "0. terminate.\n"
         );
-        if($method == "0") { break; }
+        if($method == "0") break; 
 
         switch($method) {
 
@@ -146,8 +148,11 @@
                 break;
 
             case "6" : // データ保存機能の呼び出し
-                $store->save($bookManager->toJsonArray(), $lendManager->toJsonArray());
-                echo "\n Data saved. \n";
+                if($saveDataUseCase->saveData($store, $bookManager, $lendManager)) {
+
+                    echo "\n Data saved. \n";
+                } else echo "\n Failed to save data. \n";
+                
                 break;
 
             case "7" : // データ読込機能の呼び出し
