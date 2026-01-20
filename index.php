@@ -1,15 +1,17 @@
 <?php
 
     // index.php
-    require_once('./01_book.php');
-    require_once('./02_member.php');
-    require_once('./04_lendManager.php');
-    require_once('./05_bookManager.php');
-    require_once('./06_inputValidator.php');
-    require_once('07_jsonStore.php');
-    require_once('SaveDataUseCase.php');
+    require_once('./01_Book.php');
+    require_once('./02_Member.php');
+    require_once('./04_LendManager.php');
+    require_once('./05_BookManager.php');
+    require_once('./06_InputValidator.php');
+    require_once('./07_JsonStore.php');
+    require_once('./SaveDataUseCase.php');
+    require_once('./LendBook/LendBookUsecase.php');
 
     $saveDataUseCase = new SaveDataUseCase();
+    $lendBookUsecase = new LendBookUsecase();
     $lendManager = new LendManager();
     $bookManager = new BookManager();
     $loanInputValidator = new LoanInputValidator();
@@ -17,8 +19,8 @@
     $baseDir = __DIR__;
     $dataPath = $baseDir . DIRECTORY_SEPARATOR . "data.json";
     $store = new SQLStore($dataPath);
-    date_default_timezone_set('Asia/Tokyo'); // 日本時間に設定
-    $loanDate = date('Y-m-d'); // 日付形式を設定
+    date_default_timezone_set('Asia/Tokyo'); // LendBookUsecase に置かない
+    $loanDate = date('Y-m-d'); // LendBookUsecase に置かない
 
     while(true) {
 
@@ -41,46 +43,23 @@
 
             case "1" : // 図書貸出機能の呼び出し
 
-                $bookNum = readline("\n Enter the number of a book.\n");
+                $bookNumber = readline("\n Enter the number of a book.\n");
                 // 貸出対象の図書番号を入力
-
-                if($lendManager->isBookLent($bookNum)) {
-                // 重複貸出の検証を実行
-                    
-                    echo "\n This book is already on loan.";
-                    break;
-                }
-
                 $memberName = readline("Enter your name.\n");
                 // 利用者名を入力
 
-                $foundBook = $bookManager->findBook($bookNum);
-                // 入力された番号に対応する Book オブジェクトを取得
+                try {
+                    
+                    $lendBookUsecase->lendBook($bookNumber, $memberName, $loanInputValidator, $lendManager, $bookManager, $loanDate);
+                    echo "\nThe loan has been completed.\n";
+                    break;
 
-                if(!$loanInputValidator->validate($bookNum, $memberName)) {
-                    // validate という interface の method にのみ依存
+                } catch(Throwable $e) {
 
-                    echo "\nInvalid input. Enter a 3-digit book number and a member name (English or Japanese letters only).\n";
+                    error_log($e->getMessage());
+                    echo $e->getMessage();
                     break;
                 }
-
-                if($foundBook === null) { // 検索失敗時
-
-                    echo "\n No results. \n";
-                    break;
-                    
-                } else {
-                    
-                    $book = $foundBook;
-                    echo "\n The loan has been completed. \n";
-                }// 検索成功時、Book オブジェクトを代入
- 
-                $member = new Member($memberName);
-                // 入力された名前で Member オブジェクトを生成
-
-                $lendManager->lendTo($book, $member, $loanDate); 
-                // Book, Member オブジェクトを使って単一の貸出記録を作成
-                break;
 
             case "2" : // 図書返却機能の呼び出し
 

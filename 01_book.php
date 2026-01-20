@@ -1,6 +1,6 @@
 <?php
 
-    // 01_book.php
+    // 01_Book.php
 
     class Book { // 責務 = 図書の情報
 

@@ -1,17 +1,13 @@
 <?php
 
-    // 07_jsonStore.php
-    require_once('./01_book.php');
-    require_once('./02_member.php');
+    // 07_JsonStore.php
+    require_once('./01_Book.php');
+    require_once('./02_Member.php');
 
     interface DataStore { // interface 로 추상 의존을 준비
 
         public function save(array $books, array $loans): bool;
     }
-    // interface 사용 이유
-    // 1. 두 Store 를 교체하며 사용할 이유가 필요하며 명확하다.
-    // 2. SQLStore 와 JSONStore 둘 다 $books 와 $loans 를 받아 그것을 저장한다.
-    // 즉, 책임과 그 책임이 향하는 대상(입력의 의미)이 같고, 그것을 구현하는 방식만 다르다.
 
     class SQLStore implements DataStore { // Details(SQLStore, JSONStore)이 추상에 의존
 

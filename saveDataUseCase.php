@@ -2,7 +2,7 @@
 
     class SaveDataUseCase {
 
-        public function saveData(DataStore $store, BookManager $bookManager, LendManager $lendManager) {
+        public function saveData(DataStore $store, BookManager $bookManager, LendManager $lendManager): bool {
         // use case の中に policy を置くことで、
         // object($store) の type が abstraction に依存できるようになった。
         // その結果、DataStore type ではない value が渡された場合、

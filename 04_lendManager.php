@@ -1,7 +1,7 @@
 <?php
 
-    // 04_lendManager.php
-    require_once('./03_loan.php');
+    // 04_LendManager.php
+    require_once('./03_Loan.php');
 
     class LendManager { // 責務 = 図書貸出の管理
 

@@ -1,6 +1,6 @@
 <?php
 
-    // 05_bookManager.php
+    // 05_BookManager.php
 
     class BookManager { // 責務 = 図書の管理
 

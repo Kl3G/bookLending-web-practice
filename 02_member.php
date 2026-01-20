@@ -1,6 +1,6 @@
 <?php
 
-    // 02_member.php
+    // 02_Member.php
 
     class Member { // 責務 = 図書の利用者情報
 

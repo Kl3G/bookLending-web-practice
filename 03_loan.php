@@ -1,8 +1,8 @@
 <?php
 
-    // 03_loan.php
-    require_once('./01_book.php');
-    require_once('./02_member.php');
+    // 03_Loan.php
+    require_once('./01_Book.php');
+    require_once('./02_Member.php');
 
     class Loan { // 責務 = 単一の図書貸出記録そのもの
 
