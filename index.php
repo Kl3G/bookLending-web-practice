@@ -1,15 +1,26 @@
 <?php
 
     // index.php
-    require_once('./01_Book.php');
-    require_once('./02_Member.php');
-    require_once('./04_LendManager.php');
-    require_once('./05_BookManager.php');
-    require_once('./06_InputValidator.php');
-    require_once('./07_JsonStore.php');
+    require_once('./Entities/Book.php');
+    require_once('./Entities/Member.php');
+    require_once('./LendManager.php');
+    require_once('./BookManager.php');
+    require_once('./InputValidator.php');
+    require_once('./JsonStore.php');
+    
+    require_once('./UseCases/LendBook/LendBookUsecase.php');
+    require_once('./UseCases/LendBook/LendBookRequest.php');
+
+    require_once('./UseCases/ReturnBook/ReturnBookUsecase.php');
+
+    require_once('./UseCases/RegisterBook/RegisterBookUsecase.php');
+    require_once('./UseCases/RegisterBook/RegisterBookRequest.php');
+    require_once('./UseCases/RegisterBook/Ports/BookGateway.php');
+    require_once('./Adapters/Gateways/JsonFileBookGateway.php');
+
     require_once('./SaveDataUseCase.php');
-    require_once('./LendBook/LendBookUsecase.php');
-    require_once('./LendBook/LendBookRequest.php');
+
+    
 
     $lendManager = new LendManager();
     $bookManager = new BookManager();
@@ -21,6 +32,12 @@
     date_default_timezone_set('Asia/Tokyo'); // LendBookUsecase に置かない
 
     $lendBookUsecase = new LendBookUsecase($lendManager, $bookManager, $loanInputValidator);
+
+    $returnBookUsecase = new ReturnBookUsecase($lendManager);
+
+    $registerBookUsecase = new RegisterBookUsecase();
+    $jsonFileBookGateway = new JsonFileBookGateway();
+
     $saveDataUseCase = new SaveDataUseCase();
 
     while(true) {
@@ -48,7 +65,6 @@
                 $memberName = readline("Enter your name.\n"); // 利用者名を入力
                 $today = date('Y-m-d'); // 現在の日付
                 $lendBookRequest = new LendBookRequest($bookNumber, $memberName, $today); // DTO生成
-
                 try {
 
                     $lendBookUsecase->lendBook($lendBookRequest); // Usecase呼出
@@ -57,67 +73,42 @@
 
                 } catch(Throwable $e) {
 
-                    error_log($e->getMessage());
                     echo $e->getMessage();
                     break;
                 }
 
             case "2" : // 図書返却機能の呼び出し
 
-                $bookNum = readline("\n Enter the number of a book. \n");
-                // 返却対象の図書番号を入力
+                $bookNum = readline("\n Enter the number of a book. \n"); // 返却対象の図書番号を入力
+                try {
 
-                $foundLoan = $lendManager->findLoanByBookNum($bookNum);
-                // 入力された番号を持つ貸出記録を検索
-
-                if($foundLoan === null) { // 検索失敗時
-                 
-                    echo "\n No results. \n";
+                    $returnBookUsecase->returnBook($bookNum);
+                    echo "\nReturn completed.\n";
                     break;
 
-                } else {
-                    
-                    $gotBook = $foundLoan->getBook();
-                    
-                    if($lendManager->returnFrom($gotBook)){
-                    // 検索成功時、該当の貸出記録に紐づく Book オブジェクトを利用して、
-                    // 全体の貸出記録を走査し、
-                    // この Book オブジェクトを保持している単一の貸出記録を全体の記録から削除する。
-                        echo "\n Return completed. \n";
+                } catch(Throwable $e) {
 
-                    }else echo "\n No results. \n"; // 返却可能な図書が見つからなかった場合
-
+                    echo $e->getMessage();
                     break;
                 }
 
             case "3" : // 図書登録機能の呼び出し
 
-                $bookNum = readline("\n Enter the number of a book. \n");
-                // 登録する図書番号を入力
-                if($bookManager->isNumRegistered($bookNum)) {
-                // 図書番号の重複検証を実行
+                $bookNumber = readline("\n Enter the number of a book. \n"); // 登録する図書番号を入力
+                $bookName = readline("\n Enter the name of a book. \n");// 登録する図書名を入力
+                $registerBookRequest = new RegisterBookRequest($bookNumber, $bookName);
 
-                    echo "\n This book is already registered. \n";
+                try {
+
+                    $registerBookUsecase->registerBook($registerBookRequest, $jsonFileBookGateway);
+                    echo "\n Registration successful. \n";
+                    break;
+
+                } catch(throwable $e) {
+
+                    echo $e->getMessage();
                     break;
                 }
-
-                $bookName = readline("\n Enter the name of a book. \n");
-                // 登録する図書名を入力
-
-                if(!$bookInputValidator->validate($bookNum, $bookName)) {
-                    // validate という interface の method にのみ依存
-
-                    echo "\nInvalid input. Enter a 3-digit book number and a book name (English or Japanese letters only).\n";
-                    break;
-                }
-
-                $book = new Book($bookNum, $bookName);
-                // 入力された番号と名前で Book オブジェクトを生成
-
-                $bookManager->register($book);
-                // 生成したオブジェクトを図書リストに登録
-                echo "\n Registration successful. \n";
-                break;
 
             case "4" : // 登録済み図書一覧表示
                 print_r($bookManager->view());

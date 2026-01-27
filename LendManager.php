@@ -1,14 +1,13 @@
 <?php
 
-    // 04_LendManager.php
-    require_once('./03_Loan.php');
+    // LendManager.php
+    require_once('./Entities/Loan.php');
 
     class LendManager { // 責務 = 図書貸出の管理
 
-
         private array $loans = []; // 全体の図書貸出記録
 
-        public function getLoans() { // ローカルストレージ保存機能の実装のために追加
+        public function getLoans() { // 
 
             return $this->loans;
         }
@@ -50,22 +49,6 @@
             return null;
         }
 
-        // findLoanByBookNum メソッドは、元々は下記のような形。
-        // しかし、Book 型を返却する設計にすると、
-        // LendManager クラスが本来の「貸出管理」ではなく
-        // 「図書の取得」を担うように見えてしまい、
-        // クラス構造と凝集度が低下すると判断したため、設計を修正。
-        /* public function findLendedBook($bookNum) { 
-
-            foreach($this->loans as $loan) {
-
-                $foundBook = $loan->getBook();
-
-                if($foundBook->getNum() === $bookNum) return $foundBook;
-            }
-            return null;
-        } */
-
         public function isBookLent(string $bookNum) {
         // 状態チェック（重複貸出の検証）ロジック
 
@@ -105,8 +88,6 @@
 
             return $this->loans;
         }
-
-        
     }
 
 ?>

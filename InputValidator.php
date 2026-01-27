@@ -1,6 +1,6 @@
 <?php
 
-    // 06_InputValidator.php
+    // InputValidator.php
 
     class LoanInputValidator {
 

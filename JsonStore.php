@@ -1,8 +1,8 @@
 <?php
 
-    // 07_JsonStore.php
-    require_once('./01_Book.php');
-    require_once('./02_Member.php');
+    // JsonStore.php
+    require_once('./Entities/Book.php');
+    require_once('./Entities/Member.php');
 
     interface DataStore { // interface 로 추상 의존을 준비
 
