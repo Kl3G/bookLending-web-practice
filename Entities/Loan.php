@@ -10,6 +10,11 @@
             private String $memberName, // domain data
             private string $date, // domain data
         ) { }
+
+        public function hasBookNumber($number): bool {
+
+            return $number === $this->bookNumber;
+        }
     }
     
 ?>

@@ -2,7 +2,6 @@
 
     // JsonStore.php
     require_once('./Entities/Book.php');
-    require_once('./Entities/Member.php');
 
     interface DataStore { // interface 로 추상 의존을 준비
 
@@ -79,14 +78,9 @@
                 // 二重ループを避け、findBook メソッドを再利用
                 if($book !== null){
                     // データから貸出記録を復元
-                    $lendManager->lendTo($book, new Member($loan['memberName']));
+                    //$lendManager->lendTo($book, new Member($loan['memberName']));
                 }
             }
-        }
-
-        function saveData() {
-
-            
         }
     }
 

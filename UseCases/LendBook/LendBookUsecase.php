@@ -7,26 +7,33 @@
         public function lendBook(
             
             LendBookRequest $lendBookRequest,
-            BookGateway $JsonFileBookGateway,
+            BookGateway $bookGateway,
+            LoanGateway $loanGateway,
         ): void {
 
-            // if(!($this->loanInputValidator->validate($lendBookRequest->bookNumber, $lendBookRequest->memberName))) { // 入力値 validate
-            //     throw new Exception("Enter a 3-digit book number and a member name (English or Japanese letters only).");
-            // }
+            $book = $bookGateway->existsByNumber($lendBookRequest->bookNumber);
 
-            // if($this->lendManager->isBookLent($lendBookRequest->bookNumber)) { // 本の重複貸出の検査
-            //     throw new Exception("This book is already on loan.");
-            // }
+            if($book !== null) {
 
-            $foundBook = $JsonFileBookGateway->existsByNumber($lendBookRequest->bookNumber);
+                $book->lend();
 
-            if($foundBook === null) { // 本の存在の検査
-                throw new Exception("No results.");
-            }
-
-            $member = new Member($lendBookRequest->memberName); // 入力値で object 生成
-
-            $this->lendManager->lendTo($foundBook, $member, $lendBookRequest->loanDate); // 貸出実行
+                $loan = new Loan(
+                    $lendBookRequest->bookNumber,
+                    $lendBookRequest->memberName,
+                    $lendBookRequest->loanDate,    
+                );
+                $loanGateway->register($loan);
+            } else throw new Exception("There is no such book.");
         }
     }
+
+
+
+// if(!($this->loanInputValidator->validate($lendBookRequest->bookNumber, $lendBookRequest->memberName))) { // 入力値 validate
+//     throw new Exception("Enter a 3-digit book number and a member name (English or Japanese letters only).");
+// }
+
+// if($this->lendManager->isBookLent($lendBookRequest->bookNumber)) { // 本の重複貸出の検査
+//     throw new Exception("This book is already on loan.");
+// }
 ?>

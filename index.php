@@ -2,7 +2,6 @@
 
     // index.php
     require_once('./Entities/Book.php');
-    require_once('./Entities/Member.php');
     require_once('./LendManager.php');
     require_once('./BookManager.php');
     require_once('./InputValidator.php');
@@ -10,13 +9,18 @@
     
     require_once('./UseCases/LendBook/LendBookUsecase.php');
     require_once('./UseCases/LendBook/LendBookRequest.php');
+    require_once('./UseCases/LendBook/Ports/LoanGateway.php');
+    require_once('./Adapters/Gateways/InmemoryLoanGateway.php');
 
     require_once('./UseCases/ReturnBook/ReturnBookUsecase.php');
 
     require_once('./UseCases/RegisterBook/RegisterBookUsecase.php');
     require_once('./UseCases/RegisterBook/RegisterBookRequest.php');
     require_once('./UseCases/RegisterBook/Ports/BookGateway.php');
-    require_once('./Adapters/Gateways/JsonFileBookGateway.php');
+    require_once('./Adapters/Gateways/InmemoryBookGateway.php');
+
+    require_once('./UseCases/ViewBooksAndLoan/ViewBooksUsecase.php');
+    require_once('./UseCases/ViewBooksAndLoan/ViewLoansUsecase.php');
 
     require_once('./SaveDataUseCase.php');
 
@@ -28,15 +32,19 @@
     $bookInputValidator = new BookInputValidator();
     $baseDir = __DIR__;
     $dataPath = $baseDir . DIRECTORY_SEPARATOR . "data.json";
-    $store = new SQLStore($dataPath);
+    $store = new JSONStore($dataPath);
     date_default_timezone_set('Asia/Tokyo'); // LendBookUsecase に置かない
 
     $lendBookUsecase = new LendBookUsecase($lendManager, $bookManager, $loanInputValidator);
+    $inmemoryLoanGateway = new InmemoryLoanGateway();
 
     $returnBookUsecase = new ReturnBookUsecase($lendManager);
 
     $registerBookUsecase = new RegisterBookUsecase();
-    $jsonFileBookGateway = new JsonFileBookGateway();
+    $inmemoryBookGateway = new InmemoryBookGateway();
+
+    $viewBooksUsecase = new ViewBooksUsecase();
+    $viewLoansUsecase = new ViewLoansUsecase();
 
     $saveDataUseCase = new SaveDataUseCase();
 
@@ -61,13 +69,13 @@
 
             case "1" : // 図書貸出機能の呼び出し
 
-                $bookNumber = readline("\n Enter the number of a book.\n"); // 貸出対象の図書番号を入力
+                $bookNumber = readline("\nEnter the number of a book.\n"); // 貸出対象の図書番号を入力
                 $memberName = readline("Enter your name.\n"); // 利用者名を入力
                 $today = date('Y-m-d'); // 現在の日付
                 $lendBookRequest = new LendBookRequest($bookNumber, $memberName, $today); // DTO生成
                 try {
 
-                    $lendBookUsecase->lendBook($lendBookRequest); // Usecase呼出
+                    $lendBookUsecase->lendBook($lendBookRequest, $inmemoryBookGateway, $inmemoryLoanGateway); // Usecase呼出
                     echo "\nThe loan has been completed.\n";
                     break;
 
@@ -79,10 +87,10 @@
 
             case "2" : // 図書返却機能の呼び出し
 
-                $bookNum = readline("\n Enter the number of a book. \n"); // 返却対象の図書番号を入力
+                $bookNumber = readline("\nEnter the number of a book.\n"); // 返却対象の図書番号を入力
                 try {
 
-                    $returnBookUsecase->returnBook($bookNum);
+                    $returnBookUsecase->returnBook($bookNumber, $inmemoryBookGateway, $inmemoryLoanGateway);
                     echo "\nReturn completed.\n";
                     break;
 
@@ -94,14 +102,14 @@
 
             case "3" : // 図書登録機能の呼び出し
 
-                $bookNumber = readline("\n Enter the number of a book. \n"); // 登録する図書番号を入力
-                $bookName = readline("\n Enter the name of a book. \n");// 登録する図書名を入力
+                $bookNumber = readline("\nEnter the number of a book.\n"); // 登録する図書番号を入力
+                $bookName = readline("\nEnter the name of a book.\n");// 登録する図書名を入力
                 $registerBookRequest = new RegisterBookRequest($bookNumber, $bookName);
 
                 try {
 
-                    $registerBookUsecase->registerBook($registerBookRequest, $jsonFileBookGateway);
-                    echo "\n Registration successful. \n";
+                    $registerBookUsecase->registerBook($registerBookRequest, $inmemoryBookGateway);
+                    echo "\nRegistration successful.\n";
                     break;
 
                 } catch(throwable $e) {
@@ -111,11 +119,13 @@
                 }
 
             case "4" : // 登録済み図書一覧表示
-                print_r($bookManager->view());
+                echo "\nThe Book List.\n";
+                print_r($viewBooksUsecase->viewBooks($inmemoryBookGateway));
                 break;
 
             case "5" : // 貸出記録一覧表示
-                print_r($lendManager->view());
+                echo "\nThe Loan List.\n";
+                print_r($viewLoansUsecase->viewLoans($inmemoryLoanGateway));
                 break;
 
             case "6" : // データ保存機能の呼び出し

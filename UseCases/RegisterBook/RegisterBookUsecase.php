@@ -14,7 +14,6 @@
             if($bookGateway->existsByNumber($bookNumber)) {
                 throw new Exception("This number is already registered.");
             }
-
             $bookGateway->register(new Book($bookNumber, $bookName));
         }
     }
