@@ -5,7 +5,7 @@
         public function registerBook(
 
             RegisterBookRequest $registerBookRequest,
-            BookGateway $bookGateway,
+            BookGateway $bookGateway
         ): void {
 
             $bookNumber = $registerBookRequest->bookNumber;

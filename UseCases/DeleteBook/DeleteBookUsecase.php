@@ -5,7 +5,7 @@
         public function deleteBook(
             
             string $bookNumber,
-            BookGateway $bookGateway,
+            BookGateway $bookGateway
         ) {
 
             $book = $bookGateway->findByNumber($bookNumber);

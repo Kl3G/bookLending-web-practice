@@ -8,7 +8,7 @@
             
             LendBookRequest $lendBookRequest,
             BookGateway $bookGateway,
-            LoanGateway $loanGateway,
+            LoanGateway $loanGateway
         ): void {
 
             $book = $bookGateway->findByNumber($lendBookRequest->bookNumber);

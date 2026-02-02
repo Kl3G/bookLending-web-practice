@@ -2,7 +2,7 @@
 
     class InmemoryLoanGateway implements LoanGateway {
 
-        private array $loans = [];
+        private array $loans = []; // in-memory storage
 
         public function register(Loan $loan): void {
 

@@ -6,7 +6,7 @@
             
             string $bookNumber,
             BookGateway $bookGateway,
-            LoanGateway $loanGateway,
+            LoanGateway $loanGateway
         ): void {
 
             if(($loanGateway->deleteByBookNumber($bookNumber))) {

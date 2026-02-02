@@ -2,7 +2,7 @@
 
     class InmemoryBookGateway implements BookGateway {
 
-        private array $books = [];
+        private array $books = []; // in-memory storage
 
         public function register(Book $book): void {
 

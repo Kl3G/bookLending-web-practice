@@ -2,9 +2,12 @@
 
     class ViewLoansUsecase {
 
-        public function viewLoans(LoanGateway $loanGateway): array {
+        public function viewLoans(
+            LoanGateway $loanGateway,
+            LoanPresenter $loanPresenter
+        ): array {
 
-            return $loanGateway->fetchAll();
+            return $loanPresenter->present($loanGateway->fetchAll());
         }
     }
 

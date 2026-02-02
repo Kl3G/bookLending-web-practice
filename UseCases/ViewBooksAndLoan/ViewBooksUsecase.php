@@ -2,9 +2,12 @@
 
     class ViewBooksUsecase {
 
-        public function viewBooks(BookGateway $bookGateway): array {
+        public function viewBooks(
+            BookGateway $bookGateway,
+            BookPresenter $bookPresenter
+        ): array {
 
-            return $bookGateway->fetchAll();
+            return $bookPresenter->present($bookGateway->fetchAll());
         }
     }
 

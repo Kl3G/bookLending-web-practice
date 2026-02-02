@@ -6,9 +6,9 @@
 
         public function __construct(
             
-            public string $bookNumber,
-            public string $memberName,
-            public string $loanDate,
+            public string $bookNumber, // useCase input Data
+            public string $memberName, // useCase input Data
+            public string $loanDate // useCase input Data
         ) { }
     }
 ?>
