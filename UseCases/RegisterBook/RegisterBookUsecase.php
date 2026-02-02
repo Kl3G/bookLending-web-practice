@@ -11,7 +11,7 @@
             $bookNumber = $registerBookRequest->bookNumber;
             $bookName = $registerBookRequest->bookName;
 
-            if($bookGateway->existsByNumber($bookNumber)) {
+            if($bookGateway->findByNumber($bookNumber)) {
                 throw new Exception("This number is already registered.");
             }
             $bookGateway->register(new Book($bookNumber, $bookName));

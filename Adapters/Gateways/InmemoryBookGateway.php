@@ -9,7 +9,7 @@
             $this->books[] = $book;
         }
 
-        public function existsByNumber(string $bookNumber): ?Book {
+        public function findByNumber(string $bookNumber): ?Book {
 
             foreach($this->books as $book) {
 
@@ -21,6 +21,19 @@
         public function fetchAll(): array {
 
             return $this->books;
+        }
+
+        public function deleteByNumber(string $bookNumber): bool {
+
+            foreach($this->books as $index=>$book) {
+
+                if($book->hasNumber($bookNumber)) {
+
+                    unset($this->books[$index]);
+                    return true;
+                }
+            }
+            return false;
         }
     }
 ?>

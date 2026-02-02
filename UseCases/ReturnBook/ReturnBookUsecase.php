@@ -11,7 +11,7 @@
 
             if(($loanGateway->deleteByBookNumber($bookNumber))) {
 
-                $book = $bookGateway->existsByNumber($bookNumber);
+                $book = $bookGateway->findByNumber($bookNumber);
                 $book->endLoan();
                 
             }else throw new Exception("There is no such book.");
